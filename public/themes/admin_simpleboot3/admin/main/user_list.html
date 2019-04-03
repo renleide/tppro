@@ -1,0 +1,26 @@
+<div class="col-xs-4">
+    <ul class="list-group">
+        <volist name="list" id="vo">
+            <li class="list-group-item">
+                <php>
+                    if($vo['sub_status']){
+                        $status_tit = '已提交';
+                        $status_style = 'progress-bar-success';
+                    }else{
+                        $status_tit = '<a href="javascript:void(0);" onclick="alertSub(\'single\',\''.$vo['id'].'\')"><i class="fa fa-bell"></i>催收</a>';
+                        $status_style = 'progress-bar-danger';
+                    }
+                </php>
+                <span class="badge {$status_style}">
+                    {$status_tit}
+                </span>
+                {$vo.user_nickname}
+            </li>
+        </volist>
+
+
+    </ul>
+</div>
+<script>
+    totalpage = "{$totalpage}";
+</script>

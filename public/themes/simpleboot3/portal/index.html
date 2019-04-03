@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>首页</title>
+    <meta name="keywords" content="{$site_info.site_seo_keywords|default=''}"/>
+    <meta name="description" content="{$site_info.site_seo_description|default=''}">
+    <include file="public@head"/>
+
+    <style>
+        .page-right{float: left;}
+        .table tr th{text-align: center}
+        .cur_week .bottom,.next_week .bottom{margin-top: 15px}
+        .cur_week .pro_item,.next_week .pro_item{
+            font-size: 0;
+            border:1px solid #ddd;
+            display: flex;
+            display: -webkit-flex;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .pro_item .pro_name{
+            width: 18.75%;
+            height: 100%;
+            flex: none;
+            -webkit-flex: none;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            box-sizing: border-box;
+            padding: 6px 15px;
+            vertical-align: top;
+        }
+
+        .pro_item .pro_del_btn{
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            left:0;
+            top:0;
+            height: 100%;
+            line-height: 100%;
+            color: #e6e6e6;
+            text-align: center;
+            cursor: pointer;
+            background-color: #FF0039;
+            border-radius: 2px;
+            transition: all 1s;
+            align-items: center;
+            display: flex;
+            display: -webkit-flex;
+        }
+        .pro_item .pro_name:hover .pro_del_btn{
+            width: 18.75%;
+            opacity: 1;
+        }
+        .pro_item .pro_del_btn:hover{
+            background-color: #FF7518;
+        }
+        .pro_item .pro_del_btn .tit{
+            flex: none;
+            -webkit-flex: none;
+            width: 100%;
+        }
+        .pro_item .pro_body{
+            font-size: 14px;
+            width: 81.25%;
+            min-height: 39px;
+            box-sizing: border-box;
+            flex: none;
+            -webkit-flex: none;
+            vertical-align: top;
+            position: relative;
+        }
+        .pro_body .list{
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 0px;
+            overflow: hidden;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+        }
+        .pro_body .list:last-child {
+            border-bottom: none;
+        }
+        .pro_body .list .item{
+            float: left;
+            font-size: 12px;
+            border-left: 1px solid #ddd;
+            text-align: center;
+            line-height: 39px;
+            height: 39px;
+        }
+        .pro_body .list .item input{height: 36px;width: 100%}
+        .pro_body .list .function{width: 23.08%}
+        .pro_body .list .status{width: 15.38%}
+        .pro_body .list .finishtime{width: 19.23%}
+        .pro_body .list .prevtime{width: 19.23%}
+        .pro_body .list .remark{width: 23.08%}
+        .pro_body .list .del_btn{
+            position: absolute;
+            right:0px;
+            z-index: 3;
+            background-color: rgba(0,0,0,0.6);
+            color: #fff;
+            width: 22px;
+            padding: 10px 5px;
+            border-radius: 0 2px 2px 0;
+            font-size: 12px;
+            cursor: pointer;
+            height: 39px;
+            top:0;
+            display: none;
+        }
+        .pro_body .list .del_btn:hover{
+            background-color: rgba(255,0,0,1);
+        }
+        .pro_body .add_btn{
+            display: none;
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            bottom: -20px;
+        }
+        .pro_body .first-add-btn{
+            height: 39px;
+            line-height: 39px;
+            text-align: center;
+            position:absolute;
+            width: 100%;
+            height: 20px;
+            text-align: center
+        }
+        .first-add-btn a{
+            list-style: none;
+            text-decoration: none;
+            color: #5bc0de;
+        }
+        .add_btn i:hover{color: #00a2d4;cursor: pointer}
+        .onoff { font-size: 0; position: relative; overflow: hidden; display: block; }
+        .onoff label { vertical-align: top; display: inline-block; *display: inline;
+            *zoom: 1;
+            cursor: pointer; }
+        .onoff input[type="radio"] { position: absolute; top: 0; left: -999px; }
+        .onoff .cb-enable,
+        .onoff .cb-disable {
+            color: #777;
+            font-size: 12px;
+            line-height: 20px;
+            background-color: #ECF0F1;
+            height: 20px;
+            padding: 1px 9px;
+            border-style: solid;
+            border-color: #BEC3C7;
+            box-sizing: content-box;
+            vertical-align: middle;
+            margin-bottom: 0;
+        }
+        .onoff .cb-enable { border-width: 1px 0 1px 1px; border-radius: 4px 0 0 4px; }
+        .onoff .cb-disable { border-width: 1px 1px 1px 0; border-radius: 0 4px 4px 0; }
+        .onoff .cb-disable.selected { color: #FFF; background-color: #96A6A6; border-color: #808B8D; }
+        .onoff .cb-enable.selected { color: #FFF; background-color: #1BBC9D; border-color: #16A086 }
+
+
+        /*建议*/
+        .suggest .form-box{
+            border: 1px solid #ddd;
+
+        }
+        .suggest .form-box .form-tit{
+            width: 18.75%;
+            height: 100%;
+            flex: none;
+            -webkit-flex: none;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            box-sizing: border-box;
+            padding: 6px 15px;
+            border-right: 1px solid #ddd;
+            vertical-align: top;
+        }
+        .suggest .form-body{
+            flex: none;
+        }
+        .suggest .form-body .del_btn{
+            float: right;
+        }
+        .suggest .form-body .item:hover{
+            color:#2780E3
+        }
+        .sub-btn-group{
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .sub-btn-group button{width: 100%}
+        .a_tag{
+            color: #0f192a;
+            text-decoration: none!important;
+        }
+        .suggest .list-group{margin-bottom: 0}
+    </style>
+    <hook name="before_head_end"/>
+</head>
+<body class="body-white">
+<include file="public@nav"/>
+
+<div class="container">
+    <empty name="count">
+        <div class="row">
+            <div class="alert alert-warning" role="alert">本周尚未提交</div>
+        </div>
+    </empty>
+
+    <div class="row">
+        <div class="col-xs-4" style="padding:0;">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">上周</h3>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-group" id="report_list1">
+                        <!--<li class="list-group-item"></li>-->
+                    </ul>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">本周</h3>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-group" id="report_list0">
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-8 page-right">
+            <div class="cur_week">
+                <div class="page-header" style="margin-top: 0"><h3 style="margin-top: 0">本周汇报</h3></div>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th style="width: 18.75%">项目名称</th>
+                        <th style="width: 18.75%">具体功能/模块</th>
+                        <th style="width: 12.5%">完成情况</th>
+                        <th style="width: 15.63%">完成时间</th>
+                        <th style="width: 15.62%">预计完成时间</th>
+                        <th style="width: 18.75%">备注</th>
+                    </tr>
+                    </thead>
+                    <thead>
+                    </thead>
+                </table>
+                <!--<div class="pro_item" id="project_1">
+                    <div class="pro_name">
+                        <div class="pro_del_btn" onclick="delpro(1)">
+                            <div class="tit">删除</div>
+                        </div>
+                        联盟马
+                    </div>
+                    <div class="pro_body">
+                        <div class="list">
+                            <div class="item function">后台增加广告模块</div>
+                            <div class="item status">已完成</div>
+                            <div class="item finishtime">1月15日</div>
+                            <div class="item prevtime"></div>
+                            <div class="item remark">已按时完成，可以测试</div>
+                            <div class="del_btn"><i class="fa fa-trash"></i></div>
+                        </div>
+                        <div class="list">
+                            <div class="item function">后台增加广告模块</div>
+                            <div class="item status">已完成</div>
+                            <div class="item finishtime">1月15日</div>
+                            <div class="item prevtime"></div>
+                            <div class="item remark">已按时完成，可以测试</div>
+                            <div class="del_btn"><i class="fa fa-trash"></i></div>
+                        </div>
+                        <div class="add_btn">
+                            <i class="fa fa-plus" onclick="additem(1)"></i>
+                        </div>
+                    </div>
+                </div>-->
+
+                <div class="bottom">
+                    <button type="button" class="btn btn-primary" onclick="addproject()">新增项目</button>
+                </div>
+            </div>
+
+            <div class="next_week">
+                <div class="page-header"><h3>下周计划</h3></div>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th style="width: 18.75%">项目名称</th>
+                        <th style="width: 18.75%">具体功能/模块</th>
+                        <th style="width: 12.5%">完成情况</th>
+                        <th style="width: 15.63%">工作开始时间</th>
+                        <th style="width: 15.62%">预计完成时间</th>
+                        <th style="width: 18.75%">备注</th>
+                    </tr>
+                    </thead>
+                    <thead>
+                    </thead>
+                </table>
+                <!--<div class="pro_item" id="project_1">
+                    <div class="pro_name">
+                        <div class="pro_del_btn" onclick="delpro(1)">
+                            <div class="tit">删除</div>
+                        </div>
+                        联盟马
+                    </div>
+                    <div class="pro_body">
+                        <div class="list">
+                            <div class="item function">后台增加广告模块</div>
+                            <div class="item status">已完成</div>
+                            <div class="item finishtime">1月15日</div>
+                            <div class="item prevtime"></div>
+                            <div class="item remark">已按时完成，可以测试</div>
+                            <div class="del_btn"><i class="fa fa-trash"></i></div>
+                        </div>
+                        <div class="list">
+                            <div class="item function">后台增加广告模块</div>
+                            <div class="item status">已完成</div>
+                            <div class="item finishtime">1月15日</div>
+                            <div class="item prevtime"></div>
+                            <div class="item remark">已按时完成，可以测试</div>
+                            <div class="del_btn"><i class="fa fa-trash"></i></div>
+                        </div>
+                        <div class="add_btn">
+                            <i class="fa fa-plus" onclick="additem(1)"></i>
+                        </div>
+                    </div>
+                </div>-->
+
+                <div class="bottom">
+                    <button type="button" class="btn btn-primary" onclick="addplan()">新增项目</button>
+                </div>
+            </div>
+
+            <div class="suggest">
+                <div class="page-header"><h3>改善建议</h3></div>
+                <div class="form-box">
+                    <div class="form-tit">改善建议</div>
+                    <div class="form-body">
+                        <ul class="list-group">
+
+                            <!--<li class="list-group-item item">
+                                content<a class="del_btn" href="javascript:;" onclick="delsuggest(1)">删除</a>
+                            </li>-->
+                            <li class="list-group-item" id="suggest-btn-group">
+                                <div class="input-group">
+                                    <input type="text" name="suggest" class="form-control" placeholder="请输入对公司的建议">
+                                    <div class="input-group-addon" onclick="addsuggest()" style="background-color: #2780E3;color: #fff;cursor: pointer">
+                                        提交
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="sub-btn-group">
+                <button class="btn btn-success" onclick="formSubmit()">提交</button>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<div id="formbox" style="width: 400px;padding: 6px 15px;display: none">
+    <div class="form-group">
+        <label for="func_input">功能模块</label>
+        <input type="text" class="form-control" name="func" id="func_input" placeholder="输入功能名">
+    </div>
+    <div class="form-group">
+        <label for="finish_input">完成情况</label>
+        <div class="onoff" id="finish_input">
+            <label for="switch1" class="cb-enable selected">是</label>
+            <label for="switch0" class="cb-disable">否</label>
+            <input type="radio" id="switch1"  name="status" value="1" checked>
+            <input type="radio" id="switch0" name="status" value="0"  >
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="datetimepicker">完成时间</label>
+        <input type="text" class="js-date form-control" name="finishtime" value="" id="datetimepicker">
+    </div>
+    <div class="form-group">
+        <label for="datetimepicker1">预计完成时间</label>
+        <input type="text" class="js-date form-control" name="prevtime" disabled value="" id="datetimepicker1">
+    </div>
+    <div class="form-group">
+        <label for="remark_input">备注</label>
+        <textarea class="form-control" id="remark_input"></textarea>
+    </div>
+</div>
+<div id="planform" style="width: 400px;padding: 6px 15px;display: none">
+    <div class="form-group">
+        <label for="func_input1">功能模块</label>
+        <input type="text" class="form-control" name="func" id="func_input1" placeholder="输入功能名">
+    </div>
+
+    <div class="form-group">
+        <label for="datetimepicker2">工作开始时间</label>
+        <input type="text" class="js-date form-control" name="starttime" value="" id="datetimepicker2">
+    </div>
+    <div class="form-group">
+        <label for="datetimepicker3">预计完成时间</label>
+        <input type="text" class="js-date form-control" name="prevtime" value="" id="datetimepicker3">
+    </div>
+    <div class="form-group">
+        <label for="remark_input1">备注</label>
+        <textarea class="form-control" id="remark_input1"></textarea>
+    </div>
+</div>
+<div id="proform" style="width: 400px;padding: 6px 15px;display: none">
+    <div class="form-group">
+        <label for="remark_input">项目名称</label>
+        <input name="name" type="text" class="form-control" value="">
+    </div>
+</div>
+<!-- /container -->
+<include file="public@scripts"/>
+<script src="__STATIC__/js/layer/layer.js"></script>
+<script>
+    var cur_pro_id = 0;
+    var post_data = {}
+    var cur_plan_id = 0;
+    var plan_data = {};
+    var float_left = 0;
+    var suggest_data = new Array();
+
+    $(document).ready(function () {
+        var c_width = $(".container").outerWidth();
+        var d_width = $(document).width();
+        float_left = (d_width*1 - c_width*1)/2
+        roadreportlist(0);
+        roadreportlist(1);
+    });
+    //自定义radio样式
+    $(".cb-enable").click(function(){
+        var parent = $(this).parents('.onoff');
+        $('.cb-disable',parent).removeClass('selected');
+        $(this).addClass('selected');
+        $('.checkbox',parent).attr('checked', true);
+        $("#formbox").find("input[name=prevtime]").val('');
+        $("#formbox").find("input[name=prevtime]").attr('disabled',true);
+        $("#formbox").find("input[name=finishtime]").attr('disabled',false);
+    });
+    $(".cb-disable").click(function(){
+        var parent = $(this).parents('.onoff');
+        $('.cb-enable',parent).removeClass('selected');
+        $(this).addClass('selected');
+        $('.checkbox',parent).attr('checked', false);
+        $("#formbox").find("input[name=finishtime]").val('');
+        $("#formbox").find("input[name=finishtime]").attr('disabled',true);
+        $("#formbox").find("input[name=prevtime]").attr('disabled',false);
+    });
+
+    var is_over = 0;
+    $(".container").on("mouseover mouseout",".pro_body",function(event){
+        if(event.type == "mouseover"){
+            //鼠标悬浮
+            is_over = 1;
+            $(this).find('.add_btn').show();
+        }else if(event.type == "mouseout"){
+            //鼠标离开
+            is_over = 0;
+            setTimeout(function () {
+                if(is_over==0){
+                    $('.add_btn').hide();
+                }
+            },2000);
+        }
+    });
+
+    $(".container").on("mouseover mouseout",".list",function(event){
+        if(event.type == "mouseover"){
+            //鼠标悬浮
+            $(this).find('.del_btn').show();
+        }else if(event.type == "mouseout"){
+            //鼠标离开
+            $(this).find('.del_btn').hide();
+        }
+    });
+
+    function additem(id) {
+        $("#formbox").find('input[type=text]').val('');
+        $("#formbox").find('textarea').val('');
+        layer.open({
+            type : 1,
+            title: '新增记录',
+            content: $("#formbox"),
+            area:['400px'],
+            zIndex: 999,
+            offset: ['20%', float_left+'px'],
+            btn:['确定'],
+            yes:function () {
+                var item_data = {
+                    func: $("#formbox").find('input[name=func]').val(),
+                    status: $("#formbox").find('input[name=status]:checked').val(),
+                    finishtime: $("#formbox").find('input[name=finishtime]').val(),
+                    prevtime: $("#formbox").find('input[name=prevtime]').val(),
+                    remark:$("#formbox").find("textarea").val(),
+                }
+                post_data[id].list.push(item_data);
+                var item_id = 0;
+                $.each(post_data[id].list,function (i,v) {
+                    item_id = i;
+                });
+                var status_item = '';
+                if(item_data.status==1){
+                    status_item = '<span style="color: #1BBC9D;cursor: default;"><i class="fa fa-check-circle"></i></span>';
+                }else{
+                    status_item = '<span style="color: #BEC3C7;cursor: default;"><i class="fa fa-clock-o"></i></span>';
+                }
+                var html = '<div class="list"> ' +
+                    '<div class="item function">'+item_data.func+'</div> ' +
+                    '<div class="item status">'+status_item+'</div> ' +
+                    '<div class="item finishtime">'+item_data.finishtime+'</div> ' +
+                    '<div class="item prevtime">'+item_data.prevtime+'</div> ' +
+                    '<div class="item remark">'+item_data.remark+'</div> ' +
+                    '<div class="del_btn" onclick="delitem(this,\''+id+'\',\''+item_id+'\')">' +
+                    '<i class="fa fa-trash"></i></div> </div>';
+                $("#project_"+id).find('.add_btn').before(html);
+
+                if($("#project_"+id).find('.first-add-btn').length>0){
+                    $("#project_"+id).find('.first-add-btn').remove();
+                }
+                $("#formbox").find('input[type=text]').val('');
+                $("#formbox").find('textarea').val('');
+                layer.msg('插入成功');
+                /*layer.closeAll();*/
+                return true;
+            },
+
+        });
+    }
+
+    function addproject() {
+        $("#proform").find('input[type=text]').val('');
+        var mylay=layer.open({
+            type : 1,
+            title: '新增项目',
+            content: $("#proform"),
+            area:['400px'],
+            zIndex: 999,
+            btn:['确定'],
+            yes:function () {
+                var project_name = $("#proform").find('input[type=text]').val();
+                project_name = $.trim(project_name);
+                if(project_name==''){
+                    layer.msg('请输入项目名称');
+                    return false;
+                }else{
+                    var html = '<div class="pro_item" id="project_'+cur_pro_id+'"> ' +
+                        '<div class="pro_name">' +
+                        '<div class="pro_del_btn" onclick="delpro(\''+cur_pro_id+'\')"><div class="tit">删除</div></div>'+project_name+'</div>' +
+                        '<div class="pro_body">' +
+                        '<div class="first-add-btn"> ' +
+                        '<a href="javascript:void(0);" onclick="additem(\''+cur_pro_id+'\')">新增项目记录</a> </div>'+
+                        '<div class="add_btn"> ' +
+                        '<i class="fa fa-plus" onclick="additem(\''+cur_pro_id+'\')"></i> ' +
+                        '</div></div></div>';
+                    post_data[cur_pro_id] = {name:project_name,list:[]};
+
+                    cur_pro_id++;
+                    $(".cur_week").find(".bottom").before(html);
+                    layer.close(mylay);
+                    return true;
+                }
+
+            },
+            success: function(layero, index){
+                this.enterConfirm = function(event){
+                    if(event.keyCode === 13){
+                        $(".layui-layer-btn0").click();
+                        return false; //阻止系统默认回车事件
+                    }
+                };
+                $(document).on('keydown', this.enterConfirm); //监听键盘事件
+
+
+            },
+            end: function(){
+                $(document).off('keydown', this.enterConfirm); //解除键盘事件
+            }
+        });
+    }
+
+    function addplanitem(id) {
+        var planform = $("#planform");
+        planform.find('input[type=text]').val('');
+        planform.find('textarea').val('');
+        layer.open({
+            type : 1,
+            title: '新增记录',
+            content: planform,
+            area:['400px'],
+            zIndex: 999,
+            offset: ['20%', float_left+'px'],
+            btn:['确定'],
+            yes:function () {
+                var item_data = {
+                    func: planform.find('input[name=func]').val(),
+                    starttime: planform.find('input[name=starttime]').val(),
+                    prevtime: planform.find('input[name=prevtime]').val(),
+                    remark:planform.find("textarea").val(),
+                }
+                plan_data[id].list.push(item_data);
+                var item_id = 0;
+                $.each(plan_data[id].list,function (i,v) {
+                    item_id = i;
+                });
+
+                var html = '<div class="list"> ' +
+                    '<div class="item function">'+item_data.func+'</div> ' +
+                    '<div class="item status">-</div> ' +
+                    '<div class="item finishtime">'+item_data.starttime+'</div> ' +
+                    '<div class="item prevtime">'+item_data.prevtime+'</div> ' +
+                    '<div class="item remark">'+item_data.remark+'</div> ' +
+                    '<div class="del_btn" onclick="delplanitem(this,\''+id+'\',\''+item_id+'\')">' +
+                    '<i class="fa fa-trash"></i></div> </div>';
+                $("#plan_"+id).find('.add_btn').before(html);
+
+                if($("#plan_"+id).find('.first-add-btn').length>0){
+                    $("#plan_"+id).find('.first-add-btn').remove();
+                }
+                planform.find('input[type=text]').val('');
+                planform.find('textarea').val('');
+                layer.msg('插入成功');
+                /*layer.closeAll();*/
+                return true;
+            },
+
+        });
+    }
+
+    function addplan() {
+        $("#proform").find('input[type=text]').val('');
+        var mylay=layer.open({
+            type : 1,
+            title: '新增项目',
+            content: $("#proform"),
+            area:['400px'],
+            zIndex: 999,
+            btn:['确定'],
+            yes:function () {
+                var project_name = $("#proform").find('input[type=text]').val();
+                project_name = $.trim(project_name);
+                if(project_name==''){
+                    layer.msg('请输入项目名称');
+                    return false;
+                }else{
+                    var html = '<div class="pro_item" id="plan_'+cur_plan_id+'"> ' +
+                        '<div class="pro_name">' +
+                        '<div class="pro_del_btn" onclick="delplan(\''+cur_plan_id+'\')"><div class="tit">删除</div></div>'+project_name+'</div>' +
+                        '<div class="pro_body">' +
+                        '<div class="first-add-btn"> ' +
+                        '<a href="javascript:void(0);"  onclick="addplanitem(\''+cur_plan_id+'\')">新增项目记录</a> </div>'+
+                        '<div class="add_btn"> ' +
+                        '<i class="fa fa-plus" onclick="addplanitem(\''+cur_plan_id+'\')"></i> ' +
+                        '</div></div></div>';
+                    plan_data[cur_plan_id] = {name:project_name,list:[]};
+
+                    cur_plan_id++;
+                    $(".next_week").find(".bottom").before(html);
+                    layer.close(mylay);
+                    return true;
+                }
+
+            },
+
+        });
+    }
+
+    function addsuggest() {
+        var suggest = $("input[name=suggest]").val();
+        if($.trim(suggest)==''){
+            layer.tips('请先填写建议','input[name=suggest]',{tips:1});
+            return false;
+        }
+
+        var sid = 0;
+        suggest_data.push(suggest);
+        $.each(suggest_data,function (i,v) {
+            sid = i;
+        });
+        var html = '<li class="list-group-item item">' +
+                suggest+
+            '<a class="del_btn" href="javascript:;" onclick="delsuggest(\''+sid+'\',this)">删除</a></li>';
+
+        $("#suggest-btn-group").before(html);
+        $("input[name=suggest]").val('');
+    }
+
+
+    function delitem(obj,pro_id,item_id) {
+        $(obj).parent().remove();
+        delete post_data[pro_id].list[item_id];
+
+    }
+
+    function delpro(id) {
+        $("#project_"+id).remove();
+        delete post_data[id]
+    }
+
+    function delplanitem(obj,pro_id,item_id) {
+        $(obj).parent().remove();
+        delete plan_data[pro_id].list[item_id];
+
+    }
+
+    function delplan(id) {
+        $("#plan_"+id).remove();
+        delete plan_data[id]
+    }
+
+    function delsuggest(id,obj) {
+        $(obj).parent().remove();
+        delete suggest_data[id];
+    }
+
+    function formSubmit() {
+        $.post("{:url('Index/dataPost')}",{cur_week:post_data,next_week:plan_data,suggest:suggest_data},function (res) {
+            if(res.code==1){
+                layer.msg(res.msg,{icon:1},function () {
+                    location.reload();
+                });
+            }else{
+                layer.msg(res.msg);
+            }
+        },'json').error(function () {
+            layer.msg('请求失败');
+        });
+    }
+
+    function roadreportlist(tp) {
+        $.post("{:url('Index/getReportList')}",{type:tp},function (res) {
+            if(res.code==1){
+                $("#report_list"+tp).html(res.html);
+            }else{
+                layer.msg('请求失败');
+            }
+        },'json').error(function () {
+            layer.msg('请求失败');
+        });
+    }
+</script>
+</body>
+</html>
